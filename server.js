@@ -2,14 +2,20 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cookieSession = require("cookie-session");
 const passport = require("passport");
+const cors = require("cors");
 
 const keys = require("./config/keys");
+const { PORT, CLIENT_ORIGIN, DATABASE_URL } = require("./config/config");
 const { User } = require("./models/user");
 const { Passport } = require("./services/passport");
 
-mongoose.connect(keys.mongoURI);
-
 const app = express();
+
+app.use(
+  cors({
+    origin: CLIENT_ORIGIN
+  })
+);
 
 app.use(
   cookieSession({
@@ -24,5 +30,18 @@ app.use(passport.session());
 
 require("./routes/authRoutes")(app);
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT);
+const runServer = (port = PORT) => {
+  const server = app
+    .listen(port, () => {
+      mongoose.connect(DATABASE_URL);
+      console.info(`App listening on port ${server.address().port}`);
+    })
+    .on("error", err => {
+      console.error("Express failed to start");
+      console.error(err);
+    });
+};
+
+if (require.main === module) {
+  runServer();
+}
