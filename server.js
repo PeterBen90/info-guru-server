@@ -5,17 +5,11 @@ const passport = require("passport");
 const cors = require("cors");
 
 const keys = require("./config/keys");
-const { PORT, CLIENT_ORIGIN, DATABASE_URL } = require("./config/config");
+const { PORT, DATABASE_URL } = require("./config/config");
 const { User } = require("./models/user");
 const { Passport } = require("./services/passport");
 
 const app = express();
-
-app.use(
-  cors({
-    origin: CLIENT_ORIGIN
-  })
-);
 
 app.use(
   cookieSession({
